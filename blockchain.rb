@@ -41,14 +41,25 @@ class Blockchain
     }
     self.last_block[:index] + 1
   end
+
+  def mine_work(last_block)
+    test = 0
+    puts last_block[:previous_hash]
+    until self.valid_test(last_block[:previous_hash], test)
+      test += 1
+    end
+    puts test
+    test
+  end
+
+  def valid_test(last_hash, test)
+    str = "#{last_hash}#{test}"
+    dig = Digest::SHA256.hexdigest(str)
+    dig[0..3] == '0'*4 # difficult problem
+  end
 end
 
 
 # bc = Blockchain.new
-# # puts bc.chain
-# puts bc.last_block
-# last_hash = bc.hash(bc.last_block)
-# bc.new_block(2,last_hash)
-# last_hash = bc.hash(bc.last_block)
-# bc.new_block(8,last_hash)
-# puts bc.chain
+# bc.mine_work('hola') # 85199
+# bc.mine_work(bc.last_block)
