@@ -20,3 +20,10 @@ get '/chain' do
  	response = blockchain.chain
  	response.to_json
 end
+
+post '/transactions/new' do
+  body = JSON.parse(request.body.read)
+  indexBlock = blockchain.new_transaction(body['sender'], body['receiver'], body['amount'])
+  response = {msg:"La transacción se agrego al block #{indexBlock}"}
+  response.to_json
+end

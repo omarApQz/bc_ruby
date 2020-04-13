@@ -31,6 +31,16 @@ class Blockchain
     # puts hash_block
     hash_block
   end
+
+  def new_transaction(sender, receiver, amount)
+    puts "#{sender} -- #{receiver} -- #{amount}"
+    self.current_transactions << {
+      sender: sender,
+      receiver: receiver,
+      amount: amount
+    }
+    self.last_block[:index] + 1
+  end
 end
 
 
