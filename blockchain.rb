@@ -2,12 +2,13 @@ require 'digest'
 require 'time'
 
 class Blockchain
-  attr_accessor :chain, :current_transactions
+  attr_accessor :chain, :current_transactions, :nodes
 
   def initialize()
     @current_transactions = []
     @chain = []
     @last_block=@chain[-1]
+    @nodes=[]
     new_block(1,'1')#Bloque genesis
   end
 
@@ -56,6 +57,27 @@ class Blockchain
     str = "#{last_hash}#{test}"
     dig = Digest::SHA256.hexdigest(str)
     dig[0..3] == '0'*4 # difficult problem
+  end
+
+  def register_node(node)
+    self.nodes << node
+    self.chain
+  end
+
+  def valid_chain(current_chain)
+    block_check = current_chain[0]
+    index = 1
+    response = true
+    while index < current_chain.size
+      current_block = current_chain[index]
+      last_block_hash = self.hash(block_check)
+      if (current_block[:previous_hash] != last_block_hash) && self.valid_test(last_block_hash, current_block[:proof])
+        response = false
+      end
+      index += 1
+      block_check = current_block
+    end
+    response
   end
 end
 
