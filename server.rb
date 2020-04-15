@@ -10,10 +10,20 @@ before do
   content_type :json
 end
 
-if ARGV[1] ==""
-  blockchain = Blockchain.new
-else
-  blockchain = Blockchain.new
+blockchain = Blockchain.new
+puts ARGV[1]
+unless ARGV[1] ==nil
+  ip_host, port_host=ARGV[1].split(":")
+  puts "#{ip_host} #{port_host}"
+  current_chain = Net::HTTP.get(ip_host, '/register/node', port_host)
+  valid_chain = blockchain.valid_chain(current_chain)
+  if valid_chain
+    blockchain.chain=current_chain
+    result = current_chain
+  else
+    blockchain.chain=[]
+    result = { response: "Cadena corrupta" }
+  end
 end
 
 puts "Bloque genesis: #{blockchain.chain}"
@@ -60,20 +70,20 @@ get '/mine' do
     }.to_json
 end
 
-post '/register/node' do
+get '/register/node' do
   # body = JSON.parse(request.body.read)
   # puts body
   host_node_addr = request.host_with_port
   ip_host, port_host=host_node_addr.split(":")
   puts "#{ip_host} #{port_host}"
   current_chain = blockchain.register_node(host_node_addr)
-  valid_chain = blockchain.valid_chain(current_chain)
-  if valid_chain
-    blockchain.chain=current_chain
-    result = current_chain
-  else
-    blockchain.chain=[]
-    result = { response: "Cadena corrupta" }
-  end
-  result.to_json
+  # valid_chain = blockchain.valid_chain(current_chain)
+  # if valid_chain
+  #   blockchain.chain=current_chain
+  #   result = current_chain
+  # else
+  #   blockchain.chain=[]
+  #   result = { response: "Cadena corrupta" }
+  # end
+  current_chain.to_json
 end
